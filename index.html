@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mapa Mundial de Afiliados</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Crear el mapa
+    var map = L.map('map').setView([20, 0], 2); // Vista inicial del mapa (mundo)
+
+    // Agregar capa de mapa (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Obtener ubicación por IP con ipapi.co
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        const lat = data.latitude;
+        const lon = data.longitude;
+        const city = data.city;
+        const country = data.country_name;
+
+        // Agregar marcador en la ubicación del usuario
+        L.marker([lat, lon]).addTo(map)
+          .bindPopup(`¡Hola desde ${city}, ${country}!`).openPopup();
+
+        // Centrar el mapa en la ubicación
+        map.setView([lat, lon], 6);
+      })
+      .catch(err => {
+        console.error("No se pudo obtener la ubicación", err);
+      });
+  </script>
+</body>
+</html>
+
